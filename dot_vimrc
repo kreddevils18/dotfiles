@@ -1,0 +1,158 @@
+"***************************************************************
+"" plug install packages
+"***************************************************************
+call plug#begin()
+Plug 'scrooloose/nerdtree'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'fatih/vim-go', {'do': ':GoInstallBinaries'}
+Plug 'airblade/vim-gitgutter'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'morhetz/gruvbox'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+call plug#end()
+
+"***************************************************************
+"" basic setup
+"***************************************************************
+" enable line numbers
+set number
+set relativenumber
+
+" enable syntax highlighting
+syntax enable
+
+" set encoding
+set encoding=utf-8
+set fileencoding=utf-8
+set fileencodings=utf-8
+
+" enable line wrapping
+set wrap
+
+" tabs
+set tabstop=2
+set softtabstop=0
+set shiftwidth=2
+set expandtab
+
+" indent
+set autoindent
+set smartindent
+
+" Highlight current line
+set cursorline
+
+" Enable mouse in all modes
+set mouse=a
+
+" Enable linebreak
+set linebreak
+
+" split
+nnoremap <S-l> :vsplit<CR>
+nnoremap <S-j> :split<CR>
+
+"***************************************************************
+"" NERDTree
+"***************************************************************
+nnoremap <C-n> :NERDTree<CR>
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+let NERDTreeShowHidden = 1
+
+" open nerdtree window on opening Vim
+autocmd VimEnter * NERDTreeFocus
+
+" refresh the current folder if any changes
+autocmd BufEnter NERD_tree_* | execute 'normal R'
+au CursorHold * if exists("t:NerdTreeBufName") | call <SNR>15_refreshRoot() | endif
+
+" reload the window if directory is changed
+augroup DIRCHANGE
+    au!
+    autocmd DirChanged global :NERDTreeCWD
+augroup END
+
+" close nerdtree automatically if it is theonly window open
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+"***************************************************************
+"" vim-go
+"***************************************************************
+filetype plugin indent on
+set autowrite
+
+" go syntax hightlighting
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_operators = 1
+
+" auto formatting and importing
+let g:go_fmt_autosave = 1
+let g:go_fmt_command = "goimports"
+let g:go_auto_type_info = 1
+
+" go add tags
+let g:go_addtags_transform = 'camelcase'
+noremap gat :GoAddTags<CR>
+
+" run :GoBuild or :GoTestCompile based on the go file
+function! s:build_go_files()
+  let l:file = expand('%')
+  if l:file =~# '^\f\+_test\.go$'
+    call go#test#Test(0, 1)
+  elseif l:file =~# '^\f\+\.go$'
+    call go#cmd#Build(0)
+  endif
+endfunction
+
+autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+autocmd FileType go nmap <leader>r  <Plug>(go-run)
+autocmd FileType go nmap <leader>t  <Plug>(go-test)
+
+
+"***************************************************************
+"" vim-airline
+"***************************************************************
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#formatter = 'jsformatter'
+
+"***************************************************************
+"" vim-gitgutter
+"***************************************************************
+function! GitStatus()
+  let [a,m,r] = GitGutterGetHunkSummary()
+  return printf('+%d ~%d -%d', a, m, r)
+endfunction
+set statusline+=%{GitStatus()}
+
+"***************************************************************
+"" indent-guides
+"***************************************************************
+let g:indent_guides_enable_on_vim_startup = 1
+
+"***************************************************************
+"" gruvbox
+"***************************************************************
+set background=dark
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_italic = 1
+colorscheme gruvbox
+"***************************************************************
+"" fzf
+"***************************************************************
+let g:fzf_preview_window = 'right:50%'
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6  }  }
+command! -bang -nargs=* FzfFilesNodeModules
+  \ call fzf#vim#grep('rg --files --hidden --glob "!.git/*" --glob "!node_modules/*" --ignore-case --smart-case --follow ' . shellescape(<q-args>), 1, <bang>0)
+nnoremap <C-p> :Files<CR>
+
+"***************************************************************
+"" auto closing pairs
+"***************************************************************
+:so ~/.autopair.vim

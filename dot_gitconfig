@@ -1,0 +1,23 @@
+[user]	
+	name = Kien Hoang Trung
+	email = kreddevils18@gmail.com
+
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+	interactive = auto
+
+[alias]
+	a = add
+	ame = commit --amend --no-edit
+	b = branch
+	co = checkout
+	cm = commit -m
+	cp = cherry-pick
+	s = status
+	rs = reset
+	l1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
+	l2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+	l = l1
+
