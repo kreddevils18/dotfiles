@@ -35,4 +35,8 @@ opt.backspace = "indent,eol,start"
 opt.splitright = true
 opt.splitbelow = true
 
+opt.encoding = "utf-8"
+opt.textwidth = 120
+opt.laststatus = 2
+
 opt.iskeyword:append("-")
